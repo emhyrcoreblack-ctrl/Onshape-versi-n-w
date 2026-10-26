@@ -32,4 +32,3 @@ jobs:
         with:
           name: Modelo3DStudio-debug
           path: ${{ steps.loc.outputs.dir }}/app/build/outputs/apk/debug/*.apk
-          
