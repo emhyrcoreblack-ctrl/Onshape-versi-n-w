@@ -8,6 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Localizar proyecto Gradle
+        id: loc
+        run: |
+          f=$(find . -name settings.gradle.kts -not -path "./.git/*" | head -n1)
+          if [ -z "$f" ]; then
+            echo "No se encontro settings.gradle.kts. Archivos del repositorio:"
+            find . -not -path "./.git/*" | head -50
+            exit 1
+          fi
+          echo "dir=$(dirname "$f")" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -16,8 +26,10 @@ jobs:
         with:
           gradle-version: 8.9
       - name: Compilar APK debug
+        working-directory: ${{ steps.loc.outputs.dir }}
         run: gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: Modelo3DStudio-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: ${{ steps.loc.outputs.dir }}/app/build/outputs/apk/debug/*.apk
+          
