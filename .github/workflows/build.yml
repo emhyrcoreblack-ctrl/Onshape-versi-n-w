@@ -8,12 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Localizar proyecto Gradle
+      - name: Descomprimir y localizar proyecto
         id: loc
         run: |
+          mkdir -p _src
+          for z in *.zip; do
+            [ -f "$z" ] && unzip -q -o "$z" -d _src
+          done
           f=$(find . -name settings.gradle.kts -not -path "./.git/*" | head -n1)
           if [ -z "$f" ]; then
-            echo "No se encontro settings.gradle.kts. Archivos del repositorio:"
+            echo "No se encontro settings.gradle.kts"
             find . -not -path "./.git/*" | head -50
             exit 1
           fi
@@ -32,4 +36,3 @@ jobs:
         with:
           name: Modelo3DStudio-debug
           path: ${{ steps.loc.outputs.dir }}/app/build/outputs/apk/debug/*.apk
-          
