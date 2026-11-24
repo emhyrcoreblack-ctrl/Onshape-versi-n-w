@@ -6,3 +6,5 @@ Esta carpeta contiene el entorno web experimental para revisar la interfaz y pro
 El workflow `.github/workflows/web-preview.yml` publica esta carpeta en GitHub Pages cuando cambia `web/**`.
 
 La vista web es una implementación de prueba paralela: todavía no comparte el motor geométrico Kotlin ni sustituye la app Android.
+
+Última actualización: verificación de activación de GitHub Pages.
