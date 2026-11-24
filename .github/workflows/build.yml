@@ -1,54 +1,34 @@
-name: Build APK (v5)
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "android/**"
+      - "web/**"
   workflow_dispatch:
 permissions:
   contents: write
 concurrency:
-  group: build
+  group: source-export
   cancel-in-progress: true
 jobs:
-  build:
+  export-source:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Preparar proyecto (usa el zip subido mas recientemente)
-        id: loc
-        run: |
-          rm -rf _src && mkdir -p _src
-          best=""; bestt=0
-          for z in *.zip; do
-            [ -f "$z" ] || continue
-            t=$(git log -1 --format=%ct -- "$z")
-            t=${t:-0}
-            echo "ZIP encontrado: $z (subido en $t)"
-            if [ "$t" -gt "$bestt" ]; then best="$z"; bestt="$t"; fi
-          done
-          if [ -n "$best" ]; then
-            echo "Usando el zip mas reciente: $best"
-            unzip -q -o "$best" -d _src
-          fi
-          f=$(find _src -name settings.gradle.kts | head -n1)
-          if [ -z "$f" ]; then
-            f=$(find . -name settings.gradle.kts -not -path "./.git/*" | head -n1)
-          fi
-          if [ -z "$f" ]; then
-            echo "ERROR: no se encontro settings.gradle.kts. Archivos del repositorio:"
-            find . -not -path "./.git/*" | head -60
-            exit 1
-          fi
-          echo "Proyecto en: $(dirname "$f")"
-          echo "dir=$(dirname "$f")" >> "$GITHUB_OUTPUT"
-
-      - name: Extraer el proyecto Android al repositorio para desarrollo
+      - name: Extraer el proyecto Android del ZIP
         run: |
           mkdir -p android
-          cp -a "${{ steps.loc.outputs.dir }}/." android/
+          if [ -f "Modelo3DStudio (9).zip" ]; then
+            unzip -q -o "Modelo3DStudio (9).zip" -d _src
+            root=$(find _src -name settings.gradle.kts -print -quit)
+            if [ -z "$root" ]; then
+              echo "No se encontró settings.gradle.kts dentro del ZIP"
+              exit 1
+            fi
+            cp -a "$(dirname "$root")/." android/
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add android
@@ -56,34 +36,5 @@ jobs:
             git commit -m "Expose Android source project for development"
             git push
           else
-            echo "El código fuente ya está publicado en android/"
+            echo "El código fuente Android ya está actualizado"
           fi
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.9
-
-      - name: Compilar APK
-        working-directory: ${{ steps.loc.outputs.dir }}
-        run: gradle assembleDebug --no-daemon
-
-      - name: Copiar APK
-        run: cp "${{ steps.loc.outputs.dir }}/app/build/outputs/apk/debug/app-debug.apk" Modelo3DStudio.apk
-
-      - name: Publicar APK en Releases (descarga directa)
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: Build ${{ github.run_number }}
-          files: Modelo3DStudio.apk
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Modelo3DStudio-debug
-          path: Modelo3DStudio.apk
-          
