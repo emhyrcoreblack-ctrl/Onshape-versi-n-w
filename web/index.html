@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modelo 3D Studio — Entorno de prueba</title>
+<style>
+:root{--bg:#111317;--panel:#1b1f25;--panel2:#222831;--line:#343b46;--text:#e5e9ef;--muted:#8d98a8;--blue:#6fa3e8;--gold:#d9b26a;--green:#67c59a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px Inter,system-ui,Arial;overflow:hidden}
+.top{height:48px;background:#191d23;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 14px;gap:16px}
+.logo{font-weight:700;letter-spacing:.2px}.logo b{color:var(--gold)}.doc{color:#b7c0cc}.spacer{flex:1}
+button{background:#252b34;border:1px solid #3b4450;color:var(--text);padding:7px 10px;border-radius:6px;cursor:pointer;font:inherit}button:hover{border-color:var(--blue);background:#2d3540}button.active{background:#29415d;border-color:var(--blue);color:#d9eaff}button.primary{background:#31577b;border-color:#527da6}
+.layout{height:calc(100vh - 48px);display:grid;grid-template-columns:236px 1fr 250px}
+.sidebar{background:var(--panel);border-right:1px solid var(--line);min-width:0;overflow:auto}.right{border-right:0;border-left:1px solid var(--line)}
+.panelhead{padding:13px 14px 10px;font-weight:650;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.tree{padding:10px}.treeitem{padding:8px 9px;border-radius:5px;display:flex;gap:9px;align-items:center;color:#cbd2dc;cursor:pointer}.treeitem:hover,.treeitem.sel{background:#2a3440}.treeitem .ico{width:18px;text-align:center;color:var(--blue)}.indent{padding-left:27px}.muted{color:var(--muted)}
+.viewport{position:relative;min-width:0;background:radial-gradient(ellipse at 50% 45%,#202832 0,#101419 68%,#0c0f13 100%)}
+#stage{position:absolute;inset:0}.toolbar{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;padding:6px;background:#1a2028eF;border:1px solid #3a424e;border-radius:9px;box-shadow:0 8px 28px #0006}
+.toolbar button{min-width:38px;padding:8px}.viewtools{position:absolute;right:14px;top:14px;display:grid;gap:6px}.hint{position:absolute;left:14px;bottom:14px;padding:8px 11px;background:#171c23dc;border:1px solid var(--line);border-radius:6px;color:#aeb8c5}
+.axis{position:absolute;right:18px;bottom:18px;color:#9ca9b8;font-size:11px}.props{padding:13px}.props h3{font-size:12px;color:#aeb8c5;text-transform:uppercase;letter-spacing:.8px;margin:6px 0 12px}
+.prop{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #303741;color:#b9c2cd}.prop strong{color:#eef2f7;font-weight:500}
+input{background:#11161d;border:1px solid #414b58;border-radius:5px;color:white;padding:6px;width:80px}
+.status{position:absolute;bottom:0;left:0;right:0;height:27px;background:#171c22;border-top:1px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:18px;color:#98a4b3;font-size:11px}
+.overlay{position:absolute;inset:0;background:#080b10aa;display:none;align-items:center;justify-content:center}.dialog{width:min(340px,90%);background:#20262e;border:1px solid #485362;border-radius:10px;padding:18px;box-shadow:0 20px 60px #0009}.dialog h3{margin:0 0 14px}.dialog label{display:block;color:#aeb8c5;margin:12px 0 6px}
+@media(max-width:850px){.layout{grid-template-columns:190px 1fr}.right{display:none}.toolbar{top:auto;bottom:48px;left:50%;max-width:95%;overflow:auto}.top{gap:8px}.doc{display:none}}
+@media(max-width:560px){.layout{grid-template-columns:1fr}.sidebar{display:none}.top{height:44px}.layout{height:calc(100vh - 44px)}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<header class="top"><div class="logo">MODELO <b>3D</b> STUDIO</div><div class="doc">/ Documento de prueba</div><div class="spacer"></div><button id="undo">↶</button><button id="redo">↷</button><button id="save">Guardar</button><button class="primary" id="share">Vista previa</button></header>
+<div class="layout">
+<aside class="sidebar"><div class="panelhead">Árbol de modelo <span class="muted">⌄</span></div><div class="tree" id="tree">
+<div class="treeitem"><span class="ico">◈</span>Documento</div><div class="treeitem indent"><span class="ico">⊙</span>Origen</div><div class="treeitem indent"><span class="ico">▱</span>Plano superior</div><div class="treeitem indent"><span class="ico">▱</span>Plano frontal</div><div class="treeitem indent"><span class="ico">▱</span>Plano derecho</div><div class="treeitem"><span class="ico">▧</span>Bocetos</div><div class="treeitem"><span class="ico">◧</span>Sólidos</div></div>
+<div class="panelhead">Operaciones</div><div class="tree"><button style="width:100%;margin-bottom:7px" id="newSketch">＋ Crear boceto</button><button style="width:100%" id="extrude">⬆ Extrusión</button></div></aside>
+<main class="viewport"><div id="stage"></div><div class="toolbar" id="tools"><button title="Seleccionar" class="active" data-tool="select">↖</button><button title="Línea" data-tool="line">／</button><button title="Rectángulo" data-tool="rect">▭</button><button title="Círculo" data-tool="circle">◯</button><button title="Arco" data-tool="arc">⌒</button><button title="Cota" data-tool="dim">↔</button><button title="Finalizar boceto" id="finish">✓</button></div>
+<div class="viewtools"><button id="iso">Vista isométrica</button><button id="top">Superior</button><button id="grid">Rejilla: ON</button></div><div class="hint" id="hint">Arrastra para orbitar · Rueda para zoom · Crea un boceto para dibujar</div><div class="axis">X <span style="color:#e77">●</span>　Y <span style="color:#7dca9c">●</span>　Z <span style="color:#79aef0">●</span></div><div class="status"><span id="mode">LISTO</span><span>MM</span><span id="coords">X 0.00 · Y 0.00</span><span class="spacer"></span><span id="count">0 operaciones</span></div></main>
+<aside class="sidebar right"><div class="panelhead">Propiedades</div><div class="props"><h3 id="propTitle">Documento</h3><div class="prop"><span>Unidades</span><strong>Milímetros</strong></div><div class="prop"><span>Entidades</span><strong id="entities">0</strong></div><div class="prop"><span>Operaciones</span><strong id="ops">0</strong></div><hr style="border:0;border-top:1px solid #343b46;margin:18px 0"><h3>Herramientas de boceto</h3><p class="muted">Selecciona un plano y crea geometría 2D. Los perfiles cerrados se pueden extruir.</p><div id="toolStatus" class="muted">Sin herramienta activa</div></div></aside>
+</div>
+<div class="overlay" id="extrudeDialog"><div class="dialog"><h3>Extrusión</h3><label>Profundidad (mm)</label><input id="depth" type="number" value="20" min="0.1" step="1"><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button id="cancelExtrude">Cancelar</button><button class="primary" id="applyExtrude">Aceptar</button></div></div></div>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('stage'), scene=new THREE.Scene();scene.background=new THREE.Color(0x10151b);
+const camera=new THREE.PerspectiveCamera(42,1,.1,3000);camera.position.set(125,105,135);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(host.clientWidth,host.clientHeight);renderer.shadowMap.enabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(0,0,0);
+scene.add(new THREE.HemisphereLight(0xc9ddf4,0x26303b,2));const light=new THREE.DirectionalLight(0xffffff,2.4);light.position.set(80,130,90);scene.add(light);
+const grid=new THREE.GridHelper(240,48,0x53677c,0x293644);scene.add(grid);
+const axes=new THREE.AxesHelper(35);scene.add(axes);
+const planeMat=new THREE.MeshBasicMaterial({color:0x6fa3e8,transparent:true,opacity:.055,side:THREE.DoubleSide});
+const plane=new THREE.Mesh(new THREE.PlaneGeometry(100,100),planeMat);plane.rotation.x=-Math.PI/2;plane.position.y=-.12;scene.add(plane);
+const model=new THREE.Group();scene.add(model);const sketchGroup=new THREE.Group();scene.add(sketchGroup);
+let sketch=false,tool='select',start=null,shapes=[],history=[],redoStack=[],extrusions=0,gridOn=true;
+const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),drawPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+function hit(e){const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(mouse,camera);const p=new THREE.Vector3();return ray.ray.intersectPlane(drawPlane,p)?p:null}
+function material(color=0x9dcbe6){return new THREE.MeshStandardMaterial({color,metalness:.18,roughness:.32,side:THREE.DoubleSide})}
+function addLine(a,b){const g=new THREE.BufferGeometry().setFromPoints([a,b]);const o=new THREE.Line(g,new THREE.LineBasicMaterial({color:0xe3bd79}));sketchGroup.add(o);shapes.push({kind:'line',a:a.clone(),b:b.clone(),obj:o});}
+function addRect(a,b){const pts=[new THREE.Vector3(a.x,0,a.z),new THREE.Vector3(b.x,0,a.z),new THREE.Vector3(b.x,0,b.z),new THREE.Vector3(a.x,0,b.z)];const geo=new THREE.BufferGeometry().setFromPoints([...pts,pts[0]]);const o=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xe3bd79}));sketchGroup.add(o);shapes.push({kind:'rect',a:a.clone(),b:b.clone(),obj:o});}
+function addCircle(a,b){const r=Math.hypot(a.x-b.x,a.z-b.z);if(r<.1)return;const o=new THREE.Mesh(new THREE.TorusGeometry(r,.12,8,64),new THREE.MeshBasicMaterial({color:0xe3bd79}));o.rotation.x=Math.PI/2;o.position.set(a.x,.08,a.z);sketchGroup.add(o);shapes.push({kind:'circle',a:a.clone(),radius:r,obj:o});}
+function snapshot(){history.push(shapes.map(s=>({...s,a:s.a?.clone(),b:s.b?.clone()})));if(history.length>30)history.shift();redoStack=[]}
+renderer.domElement.addEventListener('pointerdown',e=>{if(!sketch||tool==='select')return;const p=hit(e);if(!p)return;start=p;controls.enabled=false;});
+renderer.domElement.addEventListener('pointerup',e=>{if(!start)return;const end=hit(e);controls.enabled=true;if(!end){start=null;return;}snapshot();if(tool==='line')addLine(start,end);if(tool==='rect')addRect(start,end);if(tool==='circle')addCircle(start,end);start=null;updateUI();});
+renderer.domElement.addEventListener('pointermove',e=>{const p=hit(e);if(p)document.getElementById('coords').textContent='X '+p.x.toFixed(2)+' · Y '+p.z.toFixed(2)});
+function updateUI(){document.getElementById('entities').textContent=shapes.length;document.getElementById('ops').textContent=shapes.length+extrusions;document.getElementById('count').textContent=(shapes.length+extrusions)+' operaciones';document.getElementById('toolStatus').textContent=sketch?'Boceto activo · '+tool:'Sin herramienta activa';}
+function setTool(t){tool=t;document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===t));document.getElementById('toolStatus').textContent=sketch?'Herramienta: '+t:'Inicia un boceto primero';}
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{if(!sketch&&b.dataset.tool!=='select'){document.getElementById('hint').textContent='Primero pulsa Crear boceto';return;}setTool(b.dataset.tool)});
+document.getElementById('newSketch').onclick=()=>{sketch=true;tool='line';controls.enabled=true;setTool('line');document.getElementById('mode').textContent='BOCETO ACTIVO';document.getElementById('hint').textContent='Selecciona Línea, Rectángulo o Círculo y arrastra sobre el plano';document.getElementById('propTitle').textContent='Boceto 1';plane.material.opacity=.12;};
+document.getElementById('finish').onclick=()=>{sketch=false;setTool('select');document.getElementById('mode').textContent='LISTO';document.getElementById('hint').textContent='Boceto finalizado · selecciona Extrusión para crear volumen';plane.material.opacity=.055;};
+document.getElementById('extrude').onclick=()=>{if(!shapes.some(s=>s.kind==='rect'||s.kind==='circle')){document.getElementById('hint').textContent='Crea un rectángulo o círculo cerrado antes de extruir';return;}document.getElementById('extrudeDialog').style.display='flex';};
+document.getElementById('cancelExtrude').onclick=()=>document.getElementById('extrudeDialog').style.display='none';
+document.getElementById('applyExtrude').onclick=()=>{const d=Math.max(.1,Number(document.getElementById('depth').value)||20);for(const s of shapes){let geo;if(s.kind==='rect'){const w=Math.abs(s.b.x-s.a.x),h=Math.abs(s.b.z-s.a.z);if(w<.1||h<.1)continue;geo=new THREE.BoxGeometry(w,d,h);const m=new THREE.Mesh(geo,material());m.position.set((s.a.x+s.b.x)/2,d/2,(s.a.z+s.b.z)/2);model.add(m);}else if(s.kind==='circle'){geo=new THREE.CylinderGeometry(s.radius,s.radius,d,64);const m=new THREE.Mesh(geo,material());m.position.set(s.a.x,d/2,s.a.z);model.add(m);}}extrusions++;document.getElementById('extrudeDialog').style.display='none';document.getElementById('hint').textContent='Extrusión creada · '+d+' mm';updateUI();};
+document.getElementById('iso').onclick=()=>{camera.position.set(125,105,135);controls.target.set(0,0,0);controls.update()};
+document.getElementById('top').onclick=()=>{camera.position.set(0,190,0.01);controls.target.set(0,0,0);controls.update()};
+document.getElementById('grid').onclick=()=>{gridOn=!gridOn;grid.visible=gridOn;document.getElementById('grid').textContent='Rejilla: '+(gridOn?'ON':'OFF')};
+document.getElementById('undo').onclick=()=>{if(shapes.length){const s=shapes.pop();sketchGroup.remove(s.obj);s.obj.geometry?.dispose();updateUI()}};
+document.getElementById('redo').onclick=()=>{document.getElementById('hint').textContent='Rehacer estará disponible en la siguiente iteración'};
+document.getElementById('save').onclick=()=>{const data={shapes:shapes.map(s=>({kind:s.kind,a:s.a?.toArray(),b:s.b?.toArray(),radius:s.radius})),extrusions};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='modelo-3d-studio.json';a.click();URL.revokeObjectURL(a.href);};
+document.getElementById('share').onclick=()=>{document.getElementById('hint').textContent='Entorno web de desarrollo · versión experimental'};
+window.addEventListener('resize',()=>{camera.aspect=host.clientWidth/host.clientHeight;camera.updateProjectionMatrix();renderer.setSize(host.clientWidth,host.clientHeight)});
+function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();updateUI();
+</script>
+</body></html>
