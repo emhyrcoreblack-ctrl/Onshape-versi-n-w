@@ -2,39 +2,39 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Modelo 3D Studio — Entorno de prueba</title>
+<title>NOCTURNE STUDIO 3D — Editor</title>
 <style>
-:root{--bg:#111317;--panel:#1b1f25;--panel2:#222831;--line:#343b46;--text:#e5e9ef;--muted:#8d98a8;--blue:#6fa3e8;--gold:#d9b26a;--green:#67c59a}
+:root{--bg:#0A0A0B;--panel:#121214;--panel2:#1A1A1D;--line:#30291D;--text:#EDE6D6;--muted:#A89F8C;--blue:#6FA3E8;--gold:#D9B26A;--green:#67C59A;--goldsoft:#5A4B2B}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px Inter,system-ui,Arial;overflow:hidden}
-.top{height:48px;background:#191d23;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 14px;gap:16px}
+.top{height:58px;background:#121214;border-bottom:1px solid var(--goldsoft);display:flex;align-items:center;padding:0 14px;gap:16px}
 .logo{font-weight:700;letter-spacing:.2px}.logo b{color:var(--gold)}.doc{color:#b7c0cc}.spacer{flex:1}
-button{background:#252b34;border:1px solid #3b4450;color:var(--text);padding:7px 10px;border-radius:6px;cursor:pointer;font:inherit}button:hover{border-color:var(--blue);background:#2d3540}button.active{background:#29415d;border-color:var(--blue);color:#d9eaff}button.primary{background:#31577b;border-color:#527da6}
-.layout{height:calc(100vh - 48px);display:grid;grid-template-columns:236px 1fr 250px}
-.sidebar{background:var(--panel);border-right:1px solid var(--line);min-width:0;overflow:auto}.right{border-right:0;border-left:1px solid var(--line)}
+button{background:#1A1A1D;border:1px solid #4A3D25;color:var(--text);padding:7px 10px;border-radius:8px;cursor:pointer;font:inherit}button:hover{border-color:var(--gold);background:#242016}button.active{background:#3A2F17;border-color:var(--gold);color:#E9C987}button.primary{background:#D9B26A;border-color:#E9C987;color:#1A1405;font-weight:700}
+.layout{height:calc(100vh - 58px);display:grid;grid-template-columns:236px 1fr 250px}
+.sidebar{background:var(--panel);border-right:1px solid #29231A;min-width:0;overflow:auto}.right{border-right:0;border-left:1px solid var(--line)}
 .panelhead{padding:13px 14px 10px;font-weight:650;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
 .tree{padding:10px}.treeitem{padding:8px 9px;border-radius:5px;display:flex;gap:9px;align-items:center;color:#cbd2dc;cursor:pointer}.treeitem:hover,.treeitem.sel{background:#2a3440}.treeitem .ico{width:18px;text-align:center;color:var(--blue)}.indent{padding-left:27px}.muted{color:var(--muted)}
-.viewport{position:relative;min-width:0;background:radial-gradient(ellipse at 50% 45%,#202832 0,#101419 68%,#0c0f13 100%)}
-#stage{position:absolute;inset:0}.toolbar{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;padding:6px;background:#1a2028eF;border:1px solid #3a424e;border-radius:9px;box-shadow:0 8px 28px #0006}
-.toolbar button{min-width:38px;padding:8px}.viewtools{position:absolute;right:14px;top:14px;display:grid;gap:6px}.hint{position:absolute;left:14px;bottom:14px;padding:8px 11px;background:#171c23dc;border:1px solid var(--line);border-radius:6px;color:#aeb8c5}
+.viewport{position:relative;min-width:0;background:linear-gradient(180deg,#111114 0%,#050506 100%)}
+#stage{position:absolute;inset:0}.toolbar{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;padding:6px;background:#121214ed;border:1px solid #5A4B2B;border-radius:12px;box-shadow:0 8px 28px #0009}
+.toolbar button{min-width:38px;padding:8px}.viewtools{position:absolute;right:14px;top:14px;display:grid;gap:6px}.hint{position:absolute;left:14px;bottom:14px;padding:8px 11px;background:#121214e8;border:1px solid #5A4B2B;border-radius:10px;color:#A89F8C}
 .axis{position:absolute;right:18px;bottom:18px;color:#9ca9b8;font-size:11px}.props{padding:13px}.props h3{font-size:12px;color:#aeb8c5;text-transform:uppercase;letter-spacing:.8px;margin:6px 0 12px}
 .prop{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #303741;color:#b9c2cd}.prop strong{color:#eef2f7;font-weight:500}
 input{background:#11161d;border:1px solid #414b58;border-radius:5px;color:white;padding:6px;width:80px}
-.status{position:absolute;bottom:0;left:0;right:0;height:27px;background:#171c22;border-top:1px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:18px;color:#98a4b3;font-size:11px}
-.overlay{position:absolute;inset:0;background:#080b10aa;display:none;align-items:center;justify-content:center}.dialog{width:min(340px,90%);background:#20262e;border:1px solid #485362;border-radius:10px;padding:18px;box-shadow:0 20px 60px #0009}.dialog h3{margin:0 0 14px}.dialog label{display:block;color:#aeb8c5;margin:12px 0 6px}
+.status{position:absolute;bottom:0;left:0;right:0;height:27px;background:#121214;border-top:1px solid #5A4B2B;display:flex;align-items:center;padding:0 12px;gap:18px;color:#98a4b3;font-size:11px}
+.overlay{position:absolute;inset:0;background:#080b10aa;display:none;align-items:center;justify-content:center}.dialog{width:min(340px,90%);background:#1A1A1D;border:1px solid #5A4B2B;border-radius:10px;padding:18px;box-shadow:0 20px 60px #0009}.dialog h3{margin:0 0 14px}.dialog label{display:block;color:#aeb8c5;margin:12px 0 6px}
 @media(max-width:850px){.layout{grid-template-columns:190px 1fr}.right{display:none}.toolbar{top:auto;bottom:48px;left:50%;max-width:95%;overflow:auto}.top{gap:8px}.doc{display:none}}
 @media(max-width:560px){.layout{grid-template-columns:1fr}.sidebar{display:none}.top{height:44px}.layout{height:calc(100vh - 44px)}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
-<header class="top"><div class="logo">MODELO <b>3D</b> STUDIO</div><div class="doc">/ Documento de prueba</div><div class="spacer"></div><button id="undo">↶</button><button id="redo">↷</button><button id="save">Guardar</button><button class="primary" id="share">Vista previa</button></header>
+<header class="top"><div class="logo" style="letter-spacing:2px;color:#D9B26A">NOCTURNE STUDIO 3D</div><div class="doc">/ <span id="documentName">Proyecto de diseño</span></div><div class="spacer"></div><button id="undo">↶</button><button id="redo">↷</button><button id="save">Guardar</button><button class="primary" id="share">Vista previa</button></header>
 <div class="layout">
-<aside class="sidebar"><div class="panelhead">Árbol de modelo <span class="muted">⌄</span></div><div class="tree" id="tree">
-<div class="treeitem"><span class="ico">◈</span>Documento</div><div class="treeitem indent"><span class="ico">⊙</span>Origen</div><div class="treeitem indent"><span class="ico">▱</span>Plano superior</div><div class="treeitem indent"><span class="ico">▱</span>Plano frontal</div><div class="treeitem indent"><span class="ico">▱</span>Plano derecho</div><div class="treeitem"><span class="ico">▧</span>Bocetos</div><div class="treeitem"><span class="ico">◧</span>Sólidos</div></div>
-<div class="panelhead">Operaciones</div><div class="tree"><button style="width:100%;margin-bottom:7px" id="newSketch">＋ Crear boceto</button><button style="width:100%" id="extrude">⬆ Extrusión</button></div></aside>
+<aside class="sidebar"><div class="panelhead">Operaciones <span class="muted" id="treeCount">(0)</span></div><div class="tree" id="tree">
+<div class="treeitem"><span class="ico" style="color:#D9B26A">⊙</span>Origen</div><div class="treeitem indent"><span class="ico">▱</span>Top</div><div class="treeitem indent"><span class="ico">▱</span>Front</div><div class="treeitem indent"><span class="ico">▱</span>Right</div><div class="treeitem"><span class="ico">✎</span>Bocetos</div><div class="treeitem"><span class="ico">◈</span>Piezas</div></div>
+<div class="panelhead">Crear operación</div><div class="tree"><button style="width:100%;margin-bottom:7px" id="newSketch">＋ Crear boceto</button><button style="width:100%" id="extrude">⬆ Extrusión</button></div></aside>
 <main class="viewport"><div id="stage"></div><div class="toolbar" id="tools"><button title="Seleccionar" class="active" data-tool="select">↖</button><button title="Línea" data-tool="line">／</button><button title="Rectángulo" data-tool="rect">▭</button><button title="Círculo" data-tool="circle">◯</button><button title="Arco" data-tool="arc">⌒</button><button title="Cota" data-tool="dim">↔</button><button title="Finalizar boceto" id="finish">✓</button></div>
 <div class="viewtools"><button id="iso">Vista isométrica</button><button id="top">Superior</button><button id="grid">Rejilla: ON</button></div><div class="hint" id="hint">Arrastra para orbitar · Rueda para zoom · Crea un boceto para dibujar</div><div class="axis">X <span style="color:#e77">●</span>　Y <span style="color:#7dca9c">●</span>　Z <span style="color:#79aef0">●</span></div><div class="status"><span id="mode">LISTO</span><span>MM</span><span id="coords">X 0.00 · Y 0.00</span><span class="spacer"></span><span id="count">0 operaciones</span></div></main>
-<aside class="sidebar right"><div class="panelhead">Propiedades</div><div class="props"><h3 id="propTitle">Documento</h3><div class="prop"><span>Unidades</span><strong>Milímetros</strong></div><div class="prop"><span>Entidades</span><strong id="entities">0</strong></div><div class="prop"><span>Operaciones</span><strong id="ops">0</strong></div><hr style="border:0;border-top:1px solid #343b46;margin:18px 0"><h3>Herramientas de boceto</h3><p class="muted">Selecciona un plano y crea geometría 2D. Los perfiles cerrados se pueden extruir.</p><div id="toolStatus" class="muted">Sin herramienta activa</div></div></aside>
+<aside class="sidebar right"><div class="panelhead">Propiedades</div><div class="props"><h3 id="propTitle">Documento</h3><div class="prop"><span>Unidades</span><strong>Centímetros</strong></div><div class="prop"><span>Entidades</span><strong id="entities">0</strong></div><div class="prop"><span>Operaciones</span><strong id="ops">0</strong></div><hr style="border:0;border-top:1px solid #343b46;margin:18px 0"><h3>Herramientas de boceto</h3><p class="muted">Selecciona un plano y crea geometría 2D. Los perfiles cerrados se pueden extruir.</p><div id="toolStatus" class="muted">Sin herramienta activa</div></div></aside>
 </div>
 <div class="overlay" id="extrudeDialog"><div class="dialog"><h3>Extrusión</h3><label>Profundidad (mm)</label><input id="depth" type="number" value="20" min="0.1" step="1"><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button id="cancelExtrude">Cancelar</button><button class="primary" id="applyExtrude">Aceptar</button></div></div></div>
 <script type="module">
