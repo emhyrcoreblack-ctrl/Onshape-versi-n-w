@@ -72,3 +72,4 @@ jobs:
         with:
           name: Modelo3DStudio-debug
           path: Modelo3DStudio.apk
+          
